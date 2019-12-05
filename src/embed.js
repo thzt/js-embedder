@@ -9,7 +9,7 @@ const embed = (content, embeds) => {
 
   let offset = 0;
   for (const item of embeds) {
-    const { before, from, to, code } = item;
+    const { before, replace, code } = item;
 
     // 加入被修改过后的标记
     const codeWithModifedFlag = wrap(code);
@@ -22,8 +22,9 @@ const embed = (content, embeds) => {
       continue;
     }
 
+    const [from, to] = replace;
     log('替换代码，从第 %s 行到第 %s 行', from, to);
-    offset = replaceItem(lines, offset, [from, to], codeWithModifedFlag);
+    offset = replaceItem(lines, offset, replace, codeWithModifedFlag);
   }
 
   const modifiedContent = lines.join('\n');
