@@ -15,7 +15,7 @@ const wrap = code => `${flag}\n${code}\n${flag}`;
 const isContentModified = content => content.includes(flag);
 
 // backup 文件名
-const backup = file => `${file}-${Date.now()}.${packageName}`;
+const backup = file => `${file}.${packageName}`;
 
 // debug 的前缀
 const log = debug(packageName);

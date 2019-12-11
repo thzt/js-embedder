@@ -9,16 +9,16 @@ const embed = (content, embeds) => {
 
   let offset = 0;
   for (const item of embeds) {
-    const { before, replace, code } = item;
+    const { insert, replace, code } = item;
 
     // 加入被修改过后的标记
     const codeWithModifedFlag = wrap(code);
 
-    // 优先判断 before
-    const isInsertMode = before != null;
+    // 优先判断 insert
+    const isInsertMode = insert != null;
     if (isInsertMode) {
-      log('插入代码，在第 %s 行之前', before);
-      offset = insertItem(lines, offset, before, codeWithModifedFlag);
+      log('嵌入代码，在第 %s 行之前', insert);
+      offset = insertItem(lines, offset, insert, codeWithModifedFlag);
       continue;
     }
 

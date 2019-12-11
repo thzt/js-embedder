@@ -1,8 +1,8 @@
-// 在第 before 行之前插入代码 code
+// 在第 insert 行之前嵌入代码 code
 // 返回插入操作之后的 offset
-const insertItem = (lines, offset, before, code) => {
-  // -1 是因为 index 要从 0 开始，而 before 是从第一行开始的
-  const index = before - 1;
+const insertItem = (lines, offset, insert, code) => {
+  // -1 是因为 index 要从 0 开始，而 insert 是从第一行开始的
+  const index = insert - 1;
   // 影响 0 行，表示在前面插入一行
   const count = 0;
 
