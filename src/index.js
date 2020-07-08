@@ -1,31 +1,28 @@
 const fs = require('fs');
 
 const { log, backup, isContentModified } = require('./util');
-const sort = require('./sort');
 const embed = require('./embed');
 
-/*
-  向文件内嵌入源码
-
-  config: [{file, embeds: [{insert, replace, code}]}]
-
-    file:      待修改的文件绝对路径
-    insert:    在当前行前面插入 code
-    replace:   把多行替换为 code
-    code:      嵌入的源代码
-
-  insert 与 replace 优先使用 insert
-
-  提供了 embeds 表示要修改
-  没提供 embeds 或者 embeds 为 null，表示恢复到未修改的状态
-*/
-const embedder = config => {
+/**
+ * 向 js 文件中嵌入源码
+ * @param config [{file, embeds: [{insert, replace, code}]}]
+ * + file  待修改的文件绝对路径  
+ * + insert 在当前行前面插入 code  
+ * + replace 把多行替换为 code  
+ * + code 嵌入的源代码  
+ * 
+ * insert 与 replace 优先使用 insert  
+ * 
+ * 提供了 embeds 表示要修改  
+ * 没提供 embeds 或者 embeds 为 null，表示恢复到未修改的状态
+ */
+const main = (config, newline = '\n') => {
   log('开始执行');
-  config.forEach(embedEachFile);
+  config.forEach(item => embedEachFile(item, newline));
   log('执行完毕');
 };
 
-const embedEachFile = ({ file, embeds }) => {
+const embedEachFile = ({ file, embeds }, newline) => {
   log('处理文件：%s', file);
 
   // 文件是否期望被修改
@@ -35,7 +32,7 @@ const embedEachFile = ({ file, embeds }) => {
   const isModified = isContentModified(content);
 
   if (shouldModify && !isModified) {
-    modify(file, embeds, content);
+    modify(file, embeds, content, newline);
     return;
   }
 
@@ -53,18 +50,15 @@ const embedEachFile = ({ file, embeds }) => {
   log('文件需要被修改，但是已被修改过，略过');
 };
 
-const modify = (file, embeds, content) => {
+const modify = (file, embeds, content, newline) => {
   log('文件需要被修改，且尚未被修改，执行修改操作');
-
-  log('排序并校验各个修改位置');
-  const sortedEmbeds = sort(embeds);
 
   log('备份原文件');
   const backupFilePath = backup(file);
   fs.writeFileSync(backupFilePath, content);
 
   log('修改文件');
-  const modifiedContent = embed(content, sortedEmbeds);
+  const modifiedContent = embed(content, embeds, newline);
 
   log('写文件');
   fs.writeFileSync(file, modifiedContent);
@@ -84,4 +78,4 @@ const restore = file => {
   fs.unlinkSync(backupFilePath);
 };
 
-module.exports = embedder;
+module.exports = main;
